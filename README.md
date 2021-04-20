@@ -2,15 +2,12 @@
 
 Simple static Composer repository generator.
 
-[![Build Status](https://travis-ci.org/composer/satis.svg?branch=master)](https://travis-ci.org/composer/satis)
-[![codecov](https://codecov.io/gh/composer/satis/branch/master/graph/badge.svg)](https://codecov.io/gh/composer/satis)
-
 
 ## Run from source
 
 Satis requires a recent PHP version, it does not run with unsupported PHP versions. Check the `composer.json` file for details.
 
-- Install satis: `composer create-project composer/satis:dev-master`
+- Install satis: `composer create-project composer/satis:dev-main`
 - Build a repository: `php bin/satis build <configuration-file> <output-directory>`
 
 Read the more detailed instructions in the [documentation][].

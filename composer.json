@@ -29,7 +29,8 @@
         "php": "^7.3||^8.0",
         "composer/composer": "^1.10",
         "symfony/console": "^4.4||^5.0",
-        "twig/twig": "^2.12||^3.0"
+        "twig/twig": "^2.12||^3.0",
+        "twig/html-extra": "^3.2"
     },
     "autoload": {
         "psr-4": { "Composer\\Satis\\": "src" }
@@ -38,14 +39,17 @@
         "ext-json": "*",
         "friendsofphp/php-cs-fixer": "^2.15",
         "mikey179/vfsstream": "^1.6.7",
-        "phpunit/phpunit": "^9.1"
+        "phpunit/phpunit": "^9.3"
     },
     "autoload-dev": {
         "psr-4": { "Composer\\Satis\\": "tests" }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-main": "2.0-dev"
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
 }

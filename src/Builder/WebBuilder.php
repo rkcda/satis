@@ -17,6 +17,8 @@ use Composer\Package\CompletePackageInterface;
 use Composer\Package\PackageInterface;
 use Composer\Package\RootPackageInterface;
 use Twig\Environment;
+use Twig\Extension\DebugExtension;
+use Twig\Extra\Html\HtmlExtension;
 use Twig\Loader\FilesystemLoader;
 
 class WebBuilder extends Builder
@@ -27,6 +29,18 @@ class WebBuilder extends Builder
     private $dependencies;
     /** @var Environment */
     private $twig;
+    /** @var string[string] The labels for the fields to toggle on the front end */
+    private $fieldsToToggle = [
+        'description' => 'Description',
+        'type' => 'Type',
+        'keywords' => 'Keywords',
+        'homepage' => 'Homepage',
+        'license' => 'License',
+        'authors' => 'Authors',
+        'support' => 'Support',
+        'releases' => 'Releases',
+        'required-by' => 'Required by',
+    ];
 
     public function dump(array $packages): void
     {
@@ -53,6 +67,7 @@ class WebBuilder extends Builder
             'keywords' => $this->rootPackage->getKeywords(),
             'packages' => $mappedPackages,
             'dependencies' => $this->dependencies,
+            'fieldsToToggle' => $this->fieldsToToggle,
         ]);
 
         file_put_contents($this->outputDir . '/index.html', $content);
@@ -76,10 +91,16 @@ class WebBuilder extends Builder
     {
         if (null === $this->twig) {
             $twigTemplate = $this->config['twig-template'] ?? null;
-
             $templateDir = $twigTemplate ? pathinfo($twigTemplate, PATHINFO_DIRNAME) : __DIR__ . '/../../views';
             $loader = new FilesystemLoader($templateDir);
-            $this->twig = new Environment($loader);
+            $options = getenv('SATIS_TWIG_DEBUG') ? ['debug' => true] : [];
+
+            $this->twig = new Environment($loader, $options);
+            $this->twig->addExtension(new HtmlExtension());
+
+            if (getenv('SATIS_TWIG_DEBUG')) {
+                $this->twig->addExtension(new DebugExtension());
+            }
         }
 
         return $this->twig;
@@ -116,13 +137,13 @@ class WebBuilder extends Builder
     /**
      * Gets a list of packages grouped by name with a list of versions.
      *
-     * @param PackageInterface[] $packages List of packages to dump
+     * @param PackageInterface[] $ungroupedPackages List of packages to dump
      *
      * @return array Grouped list of packages with versions
      */
-    private function getMappedPackageList(array $packages): array
+    private function getMappedPackageList(array $ungroupedPackages): array
     {
-        $groupedPackages = $this->groupPackagesByName($packages);
+        $groupedPackages = $this->groupPackagesByName($ungroupedPackages);
 
         $mappedPackages = [];
         foreach ($groupedPackages as $name => $packages) {
@@ -165,7 +186,7 @@ class WebBuilder extends Builder
      */
     private function getHighestVersion(array $packages): ?PackageInterface
     {
-        /** @var $highestVersion PackageInterface|null */
+        /** @var PackageInterface|null $highestVersion */
         $highestVersion = null;
         foreach ($packages as $package) {
             if (null === $highestVersion || version_compare($package->getVersion(), $highestVersion->getVersion(), '>=')) {

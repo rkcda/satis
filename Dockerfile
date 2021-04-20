@@ -4,7 +4,7 @@ WORKDIR /satis
 
 COPY . /satis/
 
-RUN set -eux; \
+RUN set -eux ; \
   composer install \
     --no-interaction \
     --no-ansi \
@@ -18,19 +18,19 @@ RUN set -eux; \
 
 FROM php:7-cli-alpine
 
-MAINTAINER https://github.com/composer/satis
-
-RUN set -eux; \
+RUN set -eux ; \
   apk add --no-cache --upgrade \
     bash \
     curl \
     git \
-    subversion \
+    libzip-dev \
     mercurial \
     openssh \
     openssl \
-    zip \
-    unzip
+    subversion \
+    unzip \
+    zip ; \
+  docker-php-ext-install zip
 
 ENV COMPOSER_HOME /composer
 

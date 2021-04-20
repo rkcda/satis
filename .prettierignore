@@ -1,0 +1,10 @@
+/.github/
+/bin/
+/docs/
+/res/
+/tests/
+/vendor/
+/views/build/
+/box.json
+/composer.json
+/README.md
